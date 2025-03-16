@@ -86,8 +86,8 @@ export const NoticeForm: React.FC<Props> = ({
         sx={{ marginTop: '20px' }}
       />
       <TextField
-        {...register('content')}
-        error={Boolean(errors.description)}
+        {...register('description')}
+        error={Boolean(errors.status)}
         helperText={errors.description?.message}
         type='text'
         label='Description'
