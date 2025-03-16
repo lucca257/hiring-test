@@ -1,4 +1,4 @@
-const logger = require("snore-log")();
+// const logger = require("snore-log")();
 const { ApiError } = require("./api-error");
 const { generateToken, verifyToken } = require("./jwt-handle");
 const { processDBRequest } = require("./process-db-request");
@@ -19,7 +19,7 @@ const { validateRequest } = require("./validate-request");
 const { formatMyPermission } = require("./format-my-permission");
 
 module.exports = {
-    logger,
+    // logger,
     ApiError,
     verifyToken,
     generateToken,
