@@ -10,14 +10,14 @@ jest.mock('resend', () => {
     };
 });
 
-// Mock environment variables
 process.env.RESEND_API_KEY = 're_test_key';
 
 const {
     getAllStudents,
     addNewStudent,
     getStudentDetail,
-    updateStudent
+    updateStudent,
+    setStudentStatus
 } = require('./students-service');
 const {
     handleGetAllStudents,
@@ -29,9 +29,10 @@ const {
 
 jest.mock('./students-service');
 
-const mockRequest = (body = {}, params = {}) => ({
+const mockRequest = (body = {}, params = {}, user = {}) => ({
     body,
-    params
+    params,
+    user
 });
 
 const mockResponse = () => {
@@ -194,15 +195,16 @@ describe('Students Controller Tests', () => {
             const successResponse = {
                 message: 'Student status changed successfully'
             };
-            const req = mockRequest(statusData, { id: studentId });
+            const req = mockRequest(statusData, { id: studentId }, { id: 'reviewerId' });
             const res = mockResponse();
-            updateStudent.mockResolvedValue(successResponse);
+            setStudentStatus.mockResolvedValue(successResponse);
 
             await handleStudentStatus(req, res);
 
-            expect(updateStudent).toHaveBeenCalledWith({
-                systemAccess: 'INACTIVE',
-                userId: studentId
+            expect(setStudentStatus).toHaveBeenCalledWith({
+                userId: studentId,
+                reviewerId: 'reviewerId',
+                status: 'INACTIVE'
             });
             expect(res.json).toHaveBeenCalledWith(successResponse);
         });
@@ -210,17 +212,17 @@ describe('Students Controller Tests', () => {
         it('should handle error when updating student status fails', async () => {
             const studentId = '123';
             const statusData = { status: 'INACTIVE' };
-            const req = mockRequest(statusData, { id: studentId });
+            const req = mockRequest(statusData, { id: studentId }, { id: 'reviewerId' });
             const res = mockResponse();
             const next = jest.fn();
 
-            updateStudent.mockRejectedValue(new Error('Unable to update student status'));
+            setStudentStatus.mockRejectedValue(new Error('Unable to update student status'));
 
-            // Act & Assert
             await expect(handleStudentStatus(req, res, next)).resolves.not.toThrow();
-            expect(updateStudent).toHaveBeenCalledWith({
-                systemAccess: 'INACTIVE',
-                userId: studentId
+            expect(setStudentStatus).toHaveBeenCalledWith({
+                userId: studentId,
+                reviewerId: 'reviewerId',
+                status: 'INACTIVE'
             });
         });
     });
