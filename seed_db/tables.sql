@@ -297,7 +297,7 @@ $BODY$;
 --student add/update
 DROP FUNCTION IF EXISTS student_add_update(JSONB);
 CREATE OR REPLACE FUNCTION public.student_add_update(data jsonb)
-RETURNS TABLE("userId" INTEGER, status boolean, message TEXT, description TEXT) 
+RETURNS TABLE("userId" INTEGER, status boolean, message TEXT, description TEXT)
 LANGUAGE 'plpgsql'
 AS $BODY$
 
@@ -389,10 +389,10 @@ BEGIN
     --update user tables
     UPDATE users
     SET
-        name = _name,
-        email = _email,
-        role_id = _roleId,
-        is_active = _systemAccess,
+        name = COALESCE(_name, name),
+        email = COALESCE(_email, email),
+        role_id = COALESCE(_roleId, role_id),
+        is_active = COALESCE(_systemAccess, is_active),
         updated_dt = now()
     WHERE id = _userId;
 
